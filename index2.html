@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Arowana Digital">
+    <link href="images/PNG-04.png" rel="shortcut icon" type="image/x-icon">
+    <link href="images/JPG-04.jpg" rel="apple-touch-icon">
+    <title>Arowana Digital</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #042028;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .login-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .login-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            width: 800px;
+            height: 250px;
+        }
+
+        #adp-logo {
+          display: block;
+          position: fixed;
+          top: 45%;
+          left: 50%;
+          max-height: 115%;
+          max-width: 115%;
+          transform: translate(-50%, -50%);  
+        }
+        
+        .location-text {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+        
+        /* Login Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal {
+            background-color: #042028;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 400px;
+            max-width: 90vw;
+        }
+        
+        .modal h2 {
+            color: white;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            color: rgba(255, 255, 255, 0.8);
+            display: none;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .form-group input:not(:placeholder-shown) {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .login-submit {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .login-submit:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .forgot-password {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 12px;
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            transition: color 0.3s ease;
+        }
+        
+        .forgot-password:hover {
+            color: white;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            color: white;
+        }
+        
+        .error-message {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+        
+        /* Popup styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .popup {
+            background: #042028;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 450px;
+            max-width: 90vw;
+            text-align: center;
+        }
+        
+        .popup p {
+            color: white;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        .popup-close {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .popup-close:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .logo {
+                width: 600px;
+                height: 180px;
+            }
+            
+            .login-btn {
+                top: 15px;
+                right: 15px;
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#" class="login-btn" onclick="showLoginModal()">Client Login</a>
+    
+    <div class="logo-container">
+        <div class="logo">
+            <img id="adp-logo" src="images/PNG-01.png" alt="arowana logo">
+    </div>
+    
+    <div class="location-text">San Francisco • Bangkok</div>
+    
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <button class="close-btn" onclick="closeLoginModal()">&times;</button>
+            <h2>Client Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="login-submit">Sign In</button>
+                <div class="error-message" id="errorMessage">Username and password do not match.</div>
+                <a href="#" class="forgot-password" onclick="showForgotPasswordPopup()">Forgot password?</a>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Forgot Password Popup -->
+    <div class="popup-overlay" id="forgotPasswordPopup">
+        <div class="popup">
+            <p>If that username exists, a password reset email will be sent to its associated email address.</p>
+            <button class="popup-close" onclick="closeForgotPasswordPopup()">Close</button>
+        </div>
+    </div>
+    
+    <script>
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('loginForm').reset();
+        }
+        
+        function showForgotPasswordPopup() {
+            const usernameInput = document.getElementById('username');
+            const usernameValue = usernameInput.value.trim();
+            
+            if (usernameValue === '') {
+                // Show error message for empty username
+                const errorMessage = document.getElementById('errorMessage');
+                errorMessage.textContent = 'Please enter your username first.';
+                errorMessage.style.display = 'block';
+            } else {
+                // Hide any existing error message and show forgot password popup
+                document.getElementById('errorMessage').style.display = 'none';
+                document.getElementById('forgotPasswordPopup').style.display = 'flex';
+            }
+        }
+        
+        function closeForgotPasswordPopup() {
+            document.getElementById('forgotPasswordPopup').style.display = 'none';
+        }
+        
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.getElementById('errorMessage').style.display = 'block';
+        });
+        
+        // Close modals when clicking outside
+        document.getElementById('loginModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLoginModal();
+            }
+        });
+        
+        document.getElementById('forgotPasswordPopup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeForgotPasswordPopup();
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLoginModal();
+                closeForgotPasswordPopup();
+            }
+        });
+    </script>
+</body>
+</html>
