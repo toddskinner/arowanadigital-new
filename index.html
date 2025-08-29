@@ -136,6 +136,7 @@
             border-radius: 4px;
             color: white;
             font-size: 14px;
+            transition: all 0.3s ease;
         }
         
         .form-group input:focus {
@@ -152,6 +153,25 @@
         
         .form-group input::placeholder {
             color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Custom validation error styles */
+        .form-group.error input {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+        
+        .field-error {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .login-submit {
@@ -279,6 +299,7 @@
     <div class="logo-container">
         <div class="logo">
             <img id="adp-logo" src="https://ahyfhguhwkehx4d2.public.blob.vercel-storage.com/PNG-01.png" alt="arowana logo">
+        </div>
     </div>
     
     <div class="location-text">San Francisco • Bangkok</div>
@@ -288,14 +309,16 @@
         <div class="modal">
             <button class="close-btn" onclick="closeLoginModal()">&times;</button>
             <h2>Client Login</h2>
-            <form id="loginForm">
-                <div class="form-group">
+            <form id="loginForm" novalidate>
+                <div class="form-group" id="usernameGroup">
                     <label for="username">Username</label>
-                    <input type="text" id="username" name="username" placeholder="Username" required>
+                    <input type="text" id="username" name="username" placeholder="Username">
+                    <div class="field-error" id="usernameError">Please enter your username</div>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="passwordGroup">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <input type="password" id="password" name="password" placeholder="Password">
+                    <div class="field-error" id="passwordError">Please enter your password</div>
                 </div>
                 <button type="submit" class="login-submit">Sign In</button>
                 <div class="error-message" id="errorMessage">Username and password do not match.</div>
@@ -321,8 +344,48 @@
         function closeLoginModal() {
             document.getElementById('loginModal').style.display = 'none';
             document.body.style.overflow = 'auto';
+            clearValidationErrors();
             document.getElementById('errorMessage').style.display = 'none';
             document.getElementById('loginForm').reset();
+        }
+        
+        function clearValidationErrors() {
+            // Clear all error states
+            document.querySelectorAll('.form-group').forEach(group => {
+                group.classList.remove('error');
+            });
+            document.querySelectorAll('.field-error').forEach(error => {
+                error.style.display = 'none';
+            });
+        }
+        
+        function showFieldError(fieldId, message) {
+            const group = document.getElementById(fieldId + 'Group');
+            const error = document.getElementById(fieldId + 'Error');
+            
+            group.classList.add('error');
+            error.textContent = message;
+            error.style.display = 'block';
+        }
+        
+        function validateForm() {
+            clearValidationErrors();
+            let isValid = true;
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!username) {
+                showFieldError('username', 'Please enter your username');
+                isValid = false;
+            }
+            
+            if (!password) {
+                showFieldError('password', 'Please enter your password');
+                isValid = false;
+            }
+            
+            return isValid;
         }
         
         function showForgotPasswordPopup() {
@@ -330,12 +393,13 @@
             const usernameValue = usernameInput.value.trim();
             
             if (usernameValue === '') {
-                // Show error message for empty username
-                const errorMessage = document.getElementById('errorMessage');
-                errorMessage.textContent = 'Please enter your username first.';
-                errorMessage.style.display = 'block';
+                // Clear any existing errors first
+                clearValidationErrors();
+                // Show custom error for empty username
+                showFieldError('username', 'Please enter your username first');
             } else {
                 // Hide any existing error message and show forgot password popup
+                clearValidationErrors();
                 document.getElementById('errorMessage').style.display = 'none';
                 document.getElementById('forgotPasswordPopup').style.display = 'flex';
             }
@@ -345,10 +409,34 @@
             document.getElementById('forgotPasswordPopup').style.display = 'none';
         }
         
-        // Handle login form submission
+        // Handle login form submission with custom validation
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            document.getElementById('errorMessage').style.display = 'block';
+            
+            if (validateForm()) {
+                // If form is valid, show the "wrong credentials" error
+                clearValidationErrors();
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+        
+        // Clear individual field errors when user starts typing
+        document.getElementById('username').addEventListener('input', function() {
+            if (this.value.trim()) {
+                const group = document.getElementById('usernameGroup');
+                const error = document.getElementById('usernameError');
+                group.classList.remove('error');
+                error.style.display = 'none';
+            }
+        });
+        
+        document.getElementById('password').addEventListener('input', function() {
+            if (this.value.trim()) {
+                const group = document.getElementById('passwordGroup');
+                const error = document.getElementById('passwordError');
+                group.classList.remove('error');
+                error.style.display = 'none';
+            }
         });
         
         // Close modals when clicking outside
